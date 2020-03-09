@@ -1,5 +1,5 @@
 <template>
-  <div class="goods">
+  <div class="goods" style="margin-top: 20px;">
     <div class="nav-subs">
       <div class="nav-sub-bgs"></div>
       <div class="nav-sub-wrappers">
@@ -85,7 +85,7 @@
   </div>
 </template>
 <script>
-  import { getSearch } from '/api/goods.js'
+  import { getProdctList } from '/api/goods.js'
   import { recommend } from '/api/index.js'
   import mallGoods from '/components/mallGoods'
   import YButton from '/components/YButton'
@@ -125,31 +125,21 @@
         this._getSearch()
         this.loading = true
       },
-      _getSearch () {
-        let params = {
-          params: {
-            key: this.key,
-            size: this.pageSize,
-            page: this.currentPage,
-            sort: this.sort,
-            priceGt: this.min,
-            priceLte: this.max
-          }
-        }
-        getSearch(params).then(res => {
-          if (res.success === true) {
-            this.goods = res.result.itemList
-            this.total = res.result.recordCount
-            this.noResult = false
-            if (this.total === 0) {
-              this.noResult = true
-            }
+      _getSearch (key) {
+        getProdctList({
+          keyword: key
+        }).then(res => {
+          this.loading = false
+          console.log(res)
+          if (res.code === 200) {
+            this.goods = res.data.list
+            // this.total = res.result.recordCount
+            // this.noResult = false
             this.error = false
           } else {
             this.error = true
           }
-          this.loading = false
-          this.searching = false
+
         })
       },
       // 默认排序
@@ -175,11 +165,7 @@
       this.windowHeight = window.innerHeight
       this.windowWidth = window.innerWidth
       this.key = this.$route.query.key
-      this._getSearch()
-      recommend().then(res => {
-        let data = res.result
-        this.recommendPanel = data[0]
-      })
+      this._getSearch(this.$route.query.key)
     },
     components: {
       mallGoods,
@@ -193,7 +179,9 @@
 <style lang="scss" rel="stylesheet/scss" scoped>
   @import "../../assets/style/mixin";
   @import "../../assets/style/theme";
-
+  .w {
+    width: 1220px;
+  }
   .nav {
     height: 60px;
     line-height: 60px;
@@ -242,19 +230,19 @@
 
   .nav-subs {
     position: relative;
-    margin-top: -40px;
     z-index: 20;
-    height: 90px;
+    height: 40px;
     background: #f7f7f7;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .04);
     .nav-sub-wrappers {
-      padding: 31px 0;
-      height: 90px;
+      padding: 10px 0;
+      height: 40px;
       position: relative;
     }
     .w {
       display: flex;
       justify-content: space-between;
+      width: 1220px
     }
     .nav-lists {
       height: 28px;

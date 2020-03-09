@@ -6,7 +6,12 @@ import {
   ADD_ANIMATION,
   SHOW_CART,
   REDUCE_CART,
-  EDIT_CART
+  EDIT_CART,
+  ADD_LIST,
+  SET_LOGIN,
+  SET_TOKEN,
+  SET_LAST_PAGE,
+  DEL_CART
 } from './mutation-types'
 import { setStore, getStore } from '../utils/storage'
 export default {
@@ -17,28 +22,38 @@ export default {
       state.cartList = JSON.parse(initCart)
     }
   },
+  // 设置登录状态
+  [SET_LOGIN](state, loginState) {
+    state.login = loginState
+  },
+  [SET_TOKEN](state,token){
+    state.token = token
+  },
   // 加入购物车
-  [ADD_CART] (state, {productId, salePrice, productName, productImg, productNum = 1}) {
+  [ADD_CART] (state, {id, price, productName, productPic, quantity = 1}) {
+    // console.log(productImg)
     let cart = state.cartList // 购物车
     let falg = true
     let goods = {
-      productId,
-      salePrice,
+      id,
+      price,
       productName,
-      productImg
+      productPic
     }
+    // console.log(goods)
+    // console.log(cart)
     if (cart.length) {        // 有内容
       cart.forEach(item => {
-        if (item.productId === productId) {
-          if (item.productNum >= 0) {
+        if (item.id === id) {
+          if (item.quantity >= 0) {
             falg = false
-            item.productNum += productNum
+            item.quantity += quantity
           }
         }
       })
     }
     if (!cart.length || falg) {
-      goods.productNum = productNum
+      goods.quantity = quantity
       goods.checked = '1'
       cart.push(goods)
     }
@@ -86,30 +101,38 @@ export default {
     state.cartList = cart
     // 存入localStorage
     setStore('buyCart', state.cartList)
+    
   },
   // 修改购物车
-  [EDIT_CART] (state, {productId, productNum, checked}) {
+  [EDIT_CART] (state, {productId, quantity, checked}) {
     let cart = state.cartList
-    if (productNum) {
-      cart.forEach((item, i) => {
-        if (item.productId === productId) {
-          item.productNum = productNum
+    // 全选 反选
+    if(!productId){
+      cart.forEach(item=>{
+        item.checked = checked
+      })
+    }else if(quantity) {
+      cart.forEach(item=>{
+        if(item.productId === item.productId){
+          item.quantity = quantity
+        }
+      })
+    }else {
+      // console.log(productId)
+      cart.forEach(item=>{
+        if(productId === item.productId){
           item.checked = checked
         }
-      })
-    } else if (productId) {
-      cart.forEach((item, i) => {
-        if (item.productId === productId) {
-          cart.splice(i, 1)
-        }
-      })
-    } else {
-      cart.forEach((item) => {
-        item.checked = checked ? '1' : '0'
       })
     }
     state.cartList = cart
     // 存入localStorage
+    setStore('buyCart', state.cartList)
+  },
+  [DEL_CART](state,{id}){
+    // console.log(productId)
+    let cart = state.cartList
+    state.cartList = cart.filter(item=>item.id !== id)
     setStore('buyCart', state.cartList)
   },
   // 记录用户信息
@@ -128,8 +151,19 @@ export default {
     }
     if (!info.message) {
       state.userInfo = {...info}
+      state.userId = info.id
+      state.nickname = info.nickname
     } else {
       state.userInfo = null
     }
+  },
+  // 移除商品
+  [ADD_LIST] (state, list) {
+    state.list = list
+    // 存入localStorage
+  },
+  // 设置登陆前最后一个页面
+  [SET_LAST_PAGE](state, lastpage){
+    state.lastpage = lastpage
   }
 }

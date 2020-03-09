@@ -28,12 +28,27 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/member/*': {
-        target: 'http://127.0.0.1:7777'  // 请求本地 需要xmall后台项目 默认127.0.0.1:7777 
+      '/home/**': {
+        target: 'http://mall-server:8185'  // 请求本地 需要xmall后台项目 默认127.0.0.1:7777
       },
-      '/goods/*': {
-        target: 'http://127.0.0.1:7777'  // 请求本地 需要xmall后台项目 默认127.0.0.1:7777
-      }
+      '/pms/**': {
+        target: 'http://mall-server:8185'  // 请求本地 需要xmall后台项目 默认127.0.0.1:7777
+      },
+      '/sso/**': {
+        target: 'http://mall-server:8185'  // 请求本地 需要xmall后台项目 默认127.0.0.1:7777
+      },
+      '/cart/**': {
+        target: 'http://mall-server:8185'  // 请求本地 需要xmall后台项目 默认127.0.0.1:7777
+      },
+      '/member/**': {
+        target: 'http://mall-server:8185'  // 请求本地 需要xmall后台项目 默认127.0.0.1:7777
+      },
+      '/order/**': {
+        target: 'http://mall-server:8185'  // 请求本地 需要xmall后台项目 默认127.0.0.1:7777
+      },
+      '/search/**': {
+        target: 'http://mall-server:8183'  // 请求本地 需要xmall后台项目 默认127.0.0.1:7777
+      },
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README

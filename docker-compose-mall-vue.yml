@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  demo-mall-vue:
+    image: szopen/mall-vue:0.1-SNAPSHOT
+    container_name: demo-mall-vue
+    ports:
+      - 8100:80
+    external_links:
+      - demo-mall-portal:mall-portal

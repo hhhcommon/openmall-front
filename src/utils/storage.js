@@ -9,6 +9,11 @@ export const setStore = (name, content) => {
   window.localStorage.setItem(name, content)
 }
 
+// 存储 Auth和过期时间
+export const setAuth = (auth) => {
+  window.localStorage.setItem(name, content)
+}
+
 /**
  * 获取localStorage
  */

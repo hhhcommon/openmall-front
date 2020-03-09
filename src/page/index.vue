@@ -65,7 +65,7 @@
 
   .main {
     min-height: calc(100vh - 454px);
-    background: #ededed;
+    background: #fff;
     overflow: hidden;
     width: 100%;
   }

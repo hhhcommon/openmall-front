@@ -9,18 +9,18 @@
         </div>
         <div v-if="addList.length">
           <div class="address-item" v-for="(item,i) in addList" :key="i">
-            <div class="name">{{item.userName}}</div>
-            <div class="address-msg">{{item.streetName}}</div>
-            <div class="telephone">{{item.tel}}</div>
+            <div class="name">{{item.name}}</div>
+            <div class="address-msg">{{item.province}}-{{item.city}}-{{item.region}}-{{item.detailAddress}}</div>
+            <div class="telephone">{{item.phoneNumber}}</div>
             <div class="defalut">
               <a @click="changeDef(item)"
                  href="javascript:;"
-                 v-text="item.isDefault?'( 默认地址 )':'设为默认'"
-                 :class="{'defalut-address':item.isDefault}"></a>
+                 v-text="item.defaultStatus?'( 默认地址 )':'设为默认'"
+                 :class="{'defalut-address':item.defaultStatus}"></a>
             </div>
             <div class="operation">
-              <el-button type="primary" icon="edit" size="small"  @click="update(item)"></el-button>
-              <el-button type="danger" icon="delete" size="small" :data-id="item.addressId" @click="del(item.addressId,i)"></el-button>
+              <el-button type="primary" icon="edit" size="small"  @click="update(item)">修改</el-button>
+              <el-button type="danger" icon="delete" size="small" :data-id="item.addressId" @click="del(item.id,i)">删除</el-button>
             </div>
           </div>
         </div>
@@ -37,28 +37,36 @@
     <y-popup :open="popupOpen" @close='popupOpen=false' :title="popupTitle">
       <div slot="content" class="md" :data-id="msg.addressId">
         <div>
-          <input type="text" placeholder="收货人姓名" v-model="msg.userName">
+          <input type="text" placeholder="收货人姓名" v-model="msg.name">
         </div>
         <div>
-          <input type="number" placeholder="手机号码" v-model="msg.tel">
+          <input type="number" placeholder="手机号码" v-model="msg.phoneNumber">
+        </div>
+         <div>
+          <input type="text" placeholder="省" v-model="msg.province">
+        </div>
+         <div>
+          <input type="text" placeholder="市" v-model="msg.city">
+        </div>
+         <div>
+          <input type="text" placeholder="区" v-model="msg.region">
         </div>
         <div>
-          <input type="text" placeholder="收货地址" v-model="msg.streetName">
+          <input type="text" placeholder="街道地址" v-model="msg.detailAddress">
         </div>
         <div>
-          <el-checkbox class="auto-login" v-model="msg.isDefault">设为默认</el-checkbox>
+          <el-checkbox class="auto-login"  true-label=1 false-label=0 v-model="msg.defaultStatus">设为默认</el-checkbox>
         </div>
         <y-button text='保存'
                   class="btn"
-                  :classStyle="btnHighlight?'main-btn':'disabled-btn'"
-                  @btnClick="save({userId:userId,addressId:msg.addressId,userName:msg.userName,tel:msg.tel,streetName:msg.streetName,isDefault:msg.isDefault})">
+                  @btnClick="save({id:msg.id,name:msg.name,phoneNumber :msg.phoneNumber,detailAddress:msg.detailAddress,defaultStatus :msg.defaultStatus,province:msg.province, city:msg.city ,region:msg.region  })">
         </y-button>
       </div>
     </y-popup>
   </div>
 </template>
 <script>
-  import { addressList, addressUpdate, addressAdd, addressDel } from '/api/goods'
+  import { getAddressList, addressUpdate, addressAdd, addressDel } from '/api/goods'
   import YButton from '/components/YButton'
   import YPopup from '/components/popup'
   import YShelf from '/components/shelf'
@@ -70,11 +78,14 @@
         popupOpen: false,
         popupTitle: '管理收货地址',
         msg: {
-          addressId: '',
-          userName: '',
-          tel: '',
-          streetName: '',
-          isDefault: false
+          id: '',
+          name: '',
+          phoneNumber: '',
+          province:'',
+          city:'',
+          region:'',
+          detailAddress: '',
+          defaultStatus: 0
         },
         userId: ''
       }
@@ -91,34 +102,33 @@
           message: m
         })
       },
-      _addressList () {
-        addressList({userId: this.userId}).then(res => {
-          let data = res.result
-          if (data.length) {
-            this.addList = res.result
-            this.addressId = res.result[0].addressId || '1'
-          } else {
-            this.addList = []
-          }
-        })
-      },
-      _addressUpdate (params) {
-        addressUpdate(params).then(res => {
-          this._addressList()
-        })
-      },
-      _addressAdd (params) {
-        addressAdd(params).then(res => {
-          if (res.success === true) {
-            this._addressList()
-          } else {
-            this.message(res.message)
-          }
-        })
-      },
+      _addressList() {
+      getAddressList().then(res => {
+        if (res.data.length) {
+          this.addList = res.data;
+          this.id = res.data[0].id || "1";
+        } else {
+          this.addList = [];
+        }
+      });
+    },
+      _addressUpdate(params) {
+      addressUpdate(params).then(res => {
+        this._addressList();
+      });
+    },
+     _addressAdd(params) {
+      addressAdd(params).then(res => {
+        if (res.code === 200) {
+          this._addressList();
+        } else {
+          this.message(res.message);
+        }
+      });
+    },
       changeDef (item) {
-        if (!item.isDefault) {
-          item.isDefault = true
+        if (!item.defaultStatus) {
+          item.defaultStatus = true
           this._addressUpdate(item)
         }
         return false
@@ -126,10 +136,10 @@
       // 保存
       save (p) {
         this.popupOpen = false
-        if (p.addressId) {
+        if (p.id) {
           this._addressUpdate(p)
         } else {
-          delete p.addressId
+          delete p.id
           this._addressAdd(p)
         }
       },
@@ -147,24 +157,28 @@
       update (item) {
         this.popupOpen = true
         if (item) {
+          this.msg.id = item.id
           this.popupTitle = '管理收货地址'
-          this.msg.userName = item.userName
-          this.msg.tel = item.tel
-          this.msg.streetName = item.streetName
-          this.msg.isDefault = item.isDefault
-          this.msg.addressId = item.addressId
+          this.msg.phoneNumber = item.phoneNumber
+          this.msg.name = item.name
+          this.msg.province = item.province
+          this.msg.city = item.city
+          this.msg.region = item.region
+          this.msg.defaultStatus = item.defaultStatus
+          this.msg.detailAddress = item.detailAddress
         } else {
           this.popupTitle = '新增收货地址'
-          this.msg.userName = ''
-          this.msg.tel = ''
-          this.msg.streetName = ''
-          this.msg.isDefault = false
-          this.msg.addressId = ''
+           this.msg.phoneNumber = ''
+          this.msg.name = ''
+          this.msg.province =  ''
+          this.msg.city = ''
+          this.msg.region = ''
+          this.msg.detailAddress = ''
+          this.msg.defaultStatus = 0
         }
       }
     },
     created () {
-      this.userId = getStore('userId')
       this._addressList()
     },
     components: {

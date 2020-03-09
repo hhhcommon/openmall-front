@@ -40,6 +40,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.trans {
+  // transition: cubic-bezier(0.6, -0.28, 0.735, 0.045) .3s;
+  &:hover {
+    transition: cubic-bezier(0.6, -0.28, 0.735, 0.045) .2s;
+  }
+}
+
 
 // 删除按钮
 .del-btn {

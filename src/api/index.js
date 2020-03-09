@@ -1,23 +1,30 @@
 import http from './public'
-// 登陆
-export const userLogin = (params) => {
-  return http.fetchPost('/member/login', params)
+
+//*************************首页接口开始***************************/
+// 首页获取内容
+export const homeContent = (params) => {
+  return http.fetchGet('/home/content', params)
 }
-// 退出登陆
-export const loginOut = (params) => {
-  return http.fetchGet('/member/loginOut', params)
+// 获取分类
+export const productCateList = (id) => {
+  return http.fetchGet('/home/productCateList/' + id)
 }
+// 分页获取推荐商品
+export const recommendProductList = (params) => {
+  return http.fetchGet('/home/recommendProductList/',params)
+}
+// 根据分类获取专题
+export const subjectList = (params) => {
+  return http.fetchGet('/home/subjectList/',params)
+}
+//*************************首页接口结束***************************/
+
+//*************************会员登录注册接口开始***************************/
+
+
 // 用户信息
 export const userInfo = (params) => {
   return http.fetchGet('/member/checkLogin', params)
-}
-// 注册账号
-export const register = (params) => {
-  return http.fetchPost('/member/register', params)
-}
-// 上传图片
-export const upload = (params) => {
-  return http.fetchPost('/member/imgaeUpload', params)
 }
 // 修改头像
 export const updateheadimage = (params) => {
@@ -27,10 +34,11 @@ export const updateheadimage = (params) => {
 export const thanksList = (params) => {
   return http.fetchGet('/member/thanks', params)
 }
-// 首页接口
-export const productHome = (params) => {
-  return http.fetchGet('/goods/home', params)
+// 捐赠列表
+export const upload = (params) => {
+  return http.fetchGet('/member/thanks', params)
 }
+
 // 首页接口
 export const navList = (params) => {
   return http.fetchGet('/goods/navList', params)
@@ -44,7 +52,7 @@ export const thank = (params) => {
   return http.fetchGet('/goods/thank', params)
 }
 // 极验验证码
-export const geetest = (params) => {
-  return http.fetchGet('/member/geetestInit?t=' + (new Date()).getTime(), params)
-}
+// export const geetest = (params) => {
+//   return http.fetchGet('/member/geetestInit?t=' + (new Date()).getTime(), params)
+// }
 

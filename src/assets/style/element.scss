@@ -1,0 +1,23 @@
+.el-popover{
+    &.language-pop {
+        border-radius: 0;
+        background-color: #efefef;
+        border: 1px #ccc solid;
+        padding: 10px;
+    }
+}
+.el-button {
+    padding: 10px 30px;
+    border-radius: 0;
+    letter-spacing: 1px;
+    font-size: 12px;
+    line-height: 14px;
+    &.el-button--primary {
+        color: #e0ddd5;
+        background-color: #1B1B1B;
+        border: 2px #1B1B1B solid;
+    }
+    &:hover {
+        opacity: 0.9;
+    }
+}
